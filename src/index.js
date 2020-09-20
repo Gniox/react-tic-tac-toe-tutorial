@@ -54,7 +54,8 @@ class Game extends React.Component {
       ],
       stepNumber: 0,
       xIsNext: true,
-      location: []
+      location: [],
+      weight: "bold"
     };
   }
   handleClick(i) {
@@ -67,14 +68,12 @@ class Game extends React.Component {
       return;
     }
     squares[i] = this.state.xIsNext ? "X" : "O";
-    if(i === 0 || i === 1 || i === 2) {
-      coords = [i+1, 1];
-    }
-    else if(i === 3 || i === 4 || i === 5) {
-      coords = [i-2, 2];
-    }
-    else{
-      coords = [i-5, 3]
+    if (i === 0 || i === 1 || i === 2) {
+      coords = [i + 1, 1];
+    } else if (i === 3 || i === 4 || i === 5) {
+      coords = [i - 2, 2];
+    } else {
+      coords = [i - 5, 3];
     }
     this.setState({
       history: history.concat([
@@ -84,31 +83,57 @@ class Game extends React.Component {
       ]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
-      location: location.concat([
-        coords
-      ])
+      location: location.concat([coords])
     });
   }
   jumpTo(step) {
     this.setState({
       stepNumber: step,
-      xIsNext: (step % 2) === 0,
+      xIsNext: step % 2 === 0
     });
   }
+  // toBold() {
+  //   this.setState({
+  //     weight: "bold"
+  //   });
+  // }
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     const location = this.state.location;
     console.log(location);
-    
+
     const moves = history.map((step, move) => {
-      const desc = move ? "go to move #" + move + " " + location[move-1]: "go to game start";
-      return (
-        <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
-        </li>
-      );
+      const desc = move
+        ? "go to move #" + move + " " + "(" + location[move - 1] + ")"
+        : "go to game start";
+      if (this.state.stepNumber === move) {
+        return (
+          <li key={move}>
+            <button
+              onClick={() => {
+                this.jumpTo(move);
+              }}
+              style={{ fontWeight: this.state.weight }}
+            >
+              {desc}
+            </button>
+          </li>
+        );
+      } else {
+        return (
+          <li key={move}>
+            <button
+              onClick={() => {
+                this.jumpTo(move);
+              }}
+            >
+              {desc}
+            </button>
+          </li>
+        );
+      }
     });
 
     let status;
