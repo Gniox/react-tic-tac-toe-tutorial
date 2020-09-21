@@ -16,30 +16,29 @@ class Board extends React.Component {
       <Square
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
+        key={i}
       />
     );
   }
+  createSquares() {
+    let rows = [];
+    let i = 0;
+    for (i; i < 3; i++) {
+      let squares = [];
+      for (let j = 0; j < 3; j++) {
+        squares.push(this.renderSquare(3 * i + j));
+      }
+      rows.push(
+        <div className="board-row" key={i}>
+          {squares}
+        </div>
+      );
+    }
+    return rows;
+  }
 
   render() {
-    return (
-      <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
+    return <div>{this.createSquares()}</div>;
   }
 }
 
@@ -55,7 +54,9 @@ class Game extends React.Component {
       stepNumber: 0,
       xIsNext: true,
       location: [],
-      weight: "bold"
+      weight: "bold",
+      descend: true,
+      order: "Descending"
     };
   }
   handleClick(i) {
@@ -92,22 +93,17 @@ class Game extends React.Component {
       xIsNext: step % 2 === 0
     });
   }
-  // toBold() {
-  //   this.setState({
-  //     weight: "bold"
-  //   });
-  // }
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     const location = this.state.location;
-    console.log(location);
 
-    const moves = history.map((step, move) => {
+    let moves = history.map((step, move) => {
       const desc = move
-        ? "go to move #" + move + " " + "(" + location[move - 1] + ")"
+        ? `go to move # ${move} (${location[move - 1]})`
         : "go to game start";
+      console.log("This is move for descending: " + move);
       if (this.state.stepNumber === move) {
         return (
           <li key={move}>
@@ -142,17 +138,56 @@ class Game extends React.Component {
     } else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
     }
-    return (
-      <div className="game">
-        <div className="game-board">
-          <Board squares={current.squares} onClick={i => this.handleClick(i)} />
+    if(this.state.descend) {
+      return (
+        <div className="game">
+          <div className="game-board">
+            <Board squares={current.squares} onClick={i => this.handleClick(i)} />
+          </div>
+          <div className="game-info">
+            <div>
+              {status}
+              <button
+                onClick={() => {
+                  this.setState({
+                    descend: !this.state.descend,
+                    order: !this.state.descend ? "Descending" : "Ascending"
+                  });
+                }}
+              >
+                {this.state.order}
+              </button>
+            </div>
+            <ol>{moves}</ol>
+          </div>
         </div>
-        <div className="game-info">
-          <div>{status}</div>
-          <ol>{moves}</ol>
+      );
+    } else {
+      return (
+        <div className="game">
+          <div className="game-board">
+            <Board squares={current.squares} onClick={i => this.handleClick(i)} />
+          </div>
+          <div className="game-info">
+            <div>
+              {status}
+              <button
+                onClick={() => {
+                  this.setState({
+                    descend: !this.state.descend,
+                    order: !this.state.descend ? "Descending" : "Ascending"
+                  });
+                }}
+              >
+                {this.state.order}
+              </button>
+            </div>
+            <ol>{moves.reverse()}</ol>
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
+   
   }
 }
 
