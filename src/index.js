@@ -138,56 +138,29 @@ class Game extends React.Component {
     } else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
     }
-    if(this.state.descend) {
-      return (
-        <div className="game">
-          <div className="game-board">
-            <Board squares={current.squares} onClick={i => this.handleClick(i)} />
-          </div>
-          <div className="game-info">
-            <div>
-              {status}
-              <button
-                onClick={() => {
-                  this.setState({
-                    descend: !this.state.descend,
-                    order: !this.state.descend ? "Descending" : "Ascending"
-                  });
-                }}
-              >
-                {this.state.order}
-              </button>
-            </div>
-            <ol>{moves}</ol>
-          </div>
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board squares={current.squares} onClick={i => this.handleClick(i)} />
         </div>
-      );
-    } else {
-      return (
-        <div className="game">
-          <div className="game-board">
-            <Board squares={current.squares} onClick={i => this.handleClick(i)} />
+        <div className="game-info">
+          <div>
+            {status}
+            <button
+              onClick={() => {
+                this.setState({
+                  descend: !this.state.descend,
+                  order: !this.state.descend ? "Descending" : "Ascending"
+                });
+              }}
+            >
+              {this.state.order}
+            </button>
           </div>
-          <div className="game-info">
-            <div>
-              {status}
-              <button
-                onClick={() => {
-                  this.setState({
-                    descend: !this.state.descend,
-                    order: !this.state.descend ? "Descending" : "Ascending"
-                  });
-                }}
-              >
-                {this.state.order}
-              </button>
-            </div>
-            <ol>{moves.reverse()}</ol>
-          </div>
+          <ol>{this.state.descend ? moves : moves.reverse()}</ol>
         </div>
-      );
-    }
-   
+      </div>
+    );
   }
 }
 
